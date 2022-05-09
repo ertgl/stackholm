@@ -1,0 +1,15 @@
+include LICENSE
+include MANIFEST.in
+include *.md
+
+global-include mypy.ini
+global-include py.typed
+
+graft deps
+graft docs
+graft requirements
+graft stackholm
+graft tests
+
+global-exclude __pycache__
+global-exclude *.py[cod]
