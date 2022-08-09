@@ -145,6 +145,9 @@ class Context(ContextDecorator):
     ) -> None:
         self.deactivate()
 
+    def _recreate_cm(self) -> 'Context':
+        return self.activate()
+
     @property
     def storage(self) -> 'Storage':
         storage = getattr(self.__class__, '_storage', None)
