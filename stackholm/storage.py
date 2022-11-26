@@ -49,7 +49,7 @@ class Storage(
     def create_context_class(
         self,
         name: Optional[str] = None,
-        base: Type[CONTEXT_T_co] = None,
+        base: Optional[Type[CONTEXT_T_co]] = None,
         bases: Optional[Tuple[Type, ...]] = None,
         namespace: Optional[Dict[str, Any]] = None,
     ) -> Type[CONTEXT_T_co]:
