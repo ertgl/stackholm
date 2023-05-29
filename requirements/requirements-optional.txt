@@ -1,1 +1,1 @@
-asgiref==3.7.1
+asgiref==3.7.2
