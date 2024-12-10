@@ -128,9 +128,11 @@ from contextvars import ContextVar
 
 import stackholm
 
-STATE_VAR: ContextVar[stackholm.State] = ContextVar('STATE_VAR')
+# Create a context variable.
+# See: https://docs.python.org/3/library/contextvars.html#asyncio-support
+STORAGE_STATE_VAR: ContextVar[stackholm.State] = ContextVar('STORAGE_STATE_VAR')
 
-storage = stackholm.ContextVarStorage(STATE_VAR_1)
+storage = stackholm.ContextVarStorage(STORAGE_STATE_VAR)
 context_class = storage.create_context_class()
 ```
 
