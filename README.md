@@ -17,7 +17,7 @@ simple and lightweight, and can be used in a variety of environments.
   [ASGI](https://en.wikipedia.org/wiki/Asynchronous_Server_Gateway_Interface)
   environment support.
 - Indexed storage for fast lookups.
-- Fallbacks to upper contexts for missing values.
+- Zero-copy data sharing between nested contexts.
 - Scopes are not limited to blocks, and can be nested within functions or
   methods.
 
