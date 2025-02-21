@@ -2,29 +2,40 @@
 
 A
 [context manager](https://docs.python.org/3/library/contextlib.html#contextlib.contextmanager)
-for storing and retrieving scope-specific values in a stack-based manner.
+for managing scope-specific values using a stack-based approach.
+
+## Table of Contents
+- [Overview](#overview)
+  - [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Single-threaded Environment](#single-threaded-environment)
+  - [Multi-threaded Environment](#multi-threaded-environment)
+  - [Asynchronous Environment](#asynchronous-environment)
+  - [ASGI Environment](#asgi-environment)
+- [Real-world Example](#real-world-example)
+- [License](#license)
 
 ## Overview
 
-Stackholm is a Python package that provides an API for managing context data.
-It allows you to store and retrieve values in a stack-based manner, where
-the values are scoped to the current context. The package is designed to be
-simple and lightweight, and can be used in a variety of environments.
+Stackholm is a lightweight Python package for handling context data
+efficiently. It allows storing and retrieving values in a stack-based manner,
+ensuring values remain scoped to their respective contexts.
 
 ### Features
 
-- Single-threaded, multi-threaded, asynchronous, and
+- Supports single-threaded, multi-threaded, asynchronous, and
   [ASGI](https://en.wikipedia.org/wiki/Asynchronous_Server_Gateway_Interface)
-  environment support.
+  environments.
 - Indexed storage for fast lookups.
-- Zero-copy data sharing between nested contexts.
-- Scopes are not limited to blocks, and can be nested within functions or
-  methods.
+- Zero-copy data sharing across nested contexts.
+- Scopes can be nested within functions or methods, beyond block-level
+  restrictions.
 
 ## Installation
 
 The package is available on [PyPI](https://pypi.org/project/stackholm/), and can
-be installed using pip:
+be installed using any compatible package manager such as `pip`:
 
 ```bash
 pip install stackholm
@@ -32,50 +43,46 @@ pip install stackholm
 
 ## Usage
 
-Stackholm contexts require a storage class for managing the datas in the
-scopes. The package provides several storage classes that can be used in
-different environments.
-
-See the following sections for the usage examples in different environments.
+Stackholm requires a storage class to manage context data. Different storage
+classes are available for various environments.
 
 ### Single-threaded Environment
 
-The `OptimizedListStorage` class can be used for single-threaded applications.
-This storage class uses indexes for fast lookups.
+Use `OptimizedListStorage` for single-threaded applications. This class
+utilizes indexing for efficient lookups.
 
 ```python
 import stackholm
 
-# Create a context class, using the optimized list storage.
+# Create a context class using optimized list storage.
 storage = stackholm.OptimizedListStorage()
 Context = storage.create_context_class()
 
 # Create a context (checkpoint).
 with Context():
-    # Set a checkpoint value in the current context.
+    # Set a value in the current context.
     Context.set_checkpoint_value("a", 1)
 
-    # Prints: 1
+    # Output: 1
     print(Context.get_checkpoint_value("a"))
 
     # Create another context/checkpoint nested within the current context.
     with Context() as inner_context:
         # In this scope, the current context is the `inner_context`.
 
-        # The values from upper contexts are accessible,
-        # without any copy operation.
+        # The values from upper contexts are accessible in the current context.
 
-        # Prints: 1
+        # Output: 1
         print(Context.get_checkpoint_value("a"))
 
         # Mutates the value of `"a"`, only for the current context.
         Context.set_checkpoint_value("a", 2)
         
-        # Prints: 2
+        # Output: 2
         print(Context.get_checkpoint_value("a"))
 
     # Back to the previous context.
-    # Prints: 1
+    # Output: 1
     print(Context.get_checkpoint_value("a"))
 
 # The context is closed, and the values are no longer accessible.
@@ -85,9 +92,9 @@ Context.get_checkpoint_value("a")
 
 ### Multi-threaded Environment
 
-The `ThreadLocalStorage` class can be used for multi-threaded applications.
-It uses the built-in `threading.local` class behind the scenes, and it is
-an extension of the `OptimizedListStorage` class.
+Use `ThreadLocalStorage` for multi-threaded applications. It extends
+`OptimizedListStorage` and leverages Python’s built-in `threading.local`
+class to store and retrieve context data.
 
 ```python
 import stackholm
@@ -96,15 +103,14 @@ storage = stackholm.ThreadLocalStorage()
 Context = storage.create_context_class()
 ```
 
-For more information on `threading.local`, see the
+For more information on `threading.local`, refer to the
 [official documentation](https://docs.python.org/3/library/threading.html#thread-local-data).
 
 ### Asynchronous Environment
 
-The `ContextVarStorage` class can be used for asynchronous applications.
-It requires a `ContextVar` instance to be passed to the constructor, which
-is used for storing the context data in the corresponding coroutine. The
-`ContextVarStorage` class is an extension of the `OptimizedListStorage` class.
+Use `ContextVarStorage` for asynchronous applications. It extends
+`OptimizedListStorage` and leverages the built-in
+`contextvars.ContextVar` class to store and retrieve context data.
 
 ```python
 from contextvars import ContextVar
@@ -119,15 +125,15 @@ storage = stackholm.ContextVarStorage(STORAGE_STATE_VAR)
 Context = storage.create_context_class()
 ```
 
-For more information on using `ContextVar` with asynchronous applications, see
-the
+For more information on using `ContextVar` with asynchronous applications,
+refer to the
 [official documentation](https://docs.python.org/3/library/contextvars.html#asyncio-support).
 
 ### ASGI Environment
 
-The `ASGIRefLocalStorage` class can be used for ASGI applications. It uses
-the ASGI reference local storage for storing the context data. The class is
-an extension of the `OptimizedListStorage` class.
+Use `ASGIRefLocalStorage` for ASGI applications. It extends
+`OptimizedListStorage` and utilizes ASGI reference local storage for storing
+and retrieving context data.
 
 ```python
 import stackholm
@@ -136,13 +142,12 @@ storage = stackholm.ASGIRefLocalStorage()
 Context = storage.create_context_class()
 ```
 
-## Real-world Examples
+## Real-world Example
 
-For a complete example of using Stackholm in a real-world application, you may
-refer to the project [revy](https://github.com/ertgl/revy), which provides a
-re-usable [Django](https://www.djangoproject.com/) application for building
-revision control systems around the database models. It uses Stackholm for
-tracking data changes and the related informations in the contexts.
+Stackholm is used in [revy](https://github.com/ertgl/revy), a
+re-usable [Django](https://www.djangoproject.com/) application for
+building revision control systems. It tracks data changes and manages
+context-related information in a fast and efficient way.
 
 ## License
 
